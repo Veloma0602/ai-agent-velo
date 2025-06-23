@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * @author fwt
  * @date 2025/6/16
- * @Description
+ * @Description 训练应用 rag 配置
  */
 @Configuration
 public class TrainAppRagCloudAdvisorConfig {

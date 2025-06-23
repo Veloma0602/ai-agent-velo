@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * @author fwt
  * @date 2025/6/23
- * @Description
+ * @Description 自定义关键词
  */
 @Component
 public class MyKeywordEnricher {

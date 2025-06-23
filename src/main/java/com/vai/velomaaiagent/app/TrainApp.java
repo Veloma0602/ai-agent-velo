@@ -3,6 +3,7 @@ package com.vai.velomaaiagent.app;
 
 import com.vai.velomaaiagent.advisor.MyLoggerAdvisor;
 import com.vai.velomaaiagent.chatmemory.FileBasedChatMemory;
+import com.vai.velomaaiagent.rag.QueryRewriter;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -38,6 +39,9 @@ public class TrainApp {
 
     @Resource
     private VectorStore trainAppVectorStore;
+
+    @Resource
+    private QueryRewriter queryRewriter;
 
     private static final String SYSTEM_PROMPT = "你是一名融合运动科学和营养学知识的健身教练专家，具有ACE/NASM认证资质。" +
             "用户将通过你获取安全、科学、个性化的增肌/减脂解决方案。你的核心价值是：通过主动提问收集关键信息，为用户定制可执行的渐进式方案，" +
@@ -115,9 +119,10 @@ public class TrainApp {
      *
      */
     public String doRagChat(String message, String chatId){
+        String rewriteMessage = queryRewriter.doQueryRewrite(message);
         ChatResponse chatResponse = chatClient
                 .prompt()
-                .user(message)
+                .user(rewriteMessage)
                 .advisors(
                         advisorSpec -> advisorSpec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId)
                                 .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10)
