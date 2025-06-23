@@ -24,13 +24,25 @@ public class TrainAppVectorStoreConfig {
     @Resource
     private LoadAppDocumentLoader loadAppDocumentLoader;
 
-//    @Bean
+    @Resource
+    private MyTokenTextSplitter myTokenTextSplitter;
+
+    @Resource
+    private MyKeywordEnricher myKeywordEnricher;
+
+    @Bean
     VectorStore TrainAppVectorStore(EmbeddingModel dashscopeEmbeddingModel) {
         log.info("开始加载应用文档");
         SimpleVectorStore vectorStore =  SimpleVectorStore.builder(dashscopeEmbeddingModel)
                 .build();
+        // 加载文档
         List<Document> documents = loadAppDocumentLoader.loadMarkdownDocuments();
-        vectorStore.add(documents);
+        // 对文档进行切分
+        List<Document> splitdocuments = myTokenTextSplitter.splitCustomed(documents);
+
+        // 对文档进行关键词提取
+        List<Document> enrichDocuments = myKeywordEnricher.enrich(splitdocuments);
+        vectorStore.add(enrichDocuments);
         log.info("应用文档加载完成，向量存储已创建");
         return vectorStore;
 
