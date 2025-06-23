@@ -24,7 +24,7 @@ public class TrainAppVectorStoreConfig {
     @Resource
     private LoadAppDocumentLoader loadAppDocumentLoader;
 
-    @Bean
+//    @Bean
     VectorStore TrainAppVectorStore(EmbeddingModel dashscopeEmbeddingModel) {
         log.info("开始加载应用文档");
         SimpleVectorStore vectorStore =  SimpleVectorStore.builder(dashscopeEmbeddingModel)

@@ -124,7 +124,7 @@ public class TrainApp {
                 )
                 .advisors(new MyLoggerAdvisor())
                 //检索增强顾问复杂版，用的云知识库
-                .advisors(loadTrainAppRagCloudAdvisor)
+//                .advisors(loadTrainAppRagCloudAdvisor)
                 //简单的问答顾问，使用向量存储进行检索
 //                .advisors(new QuestionAnswerAdvisor(trainAppVectorStore))
                 .call()
