@@ -4,6 +4,7 @@ package com.vai.velomaaiagent.app;
 import com.vai.velomaaiagent.advisor.MyLoggerAdvisor;
 import com.vai.velomaaiagent.chatmemory.FileBasedChatMemory;
 import com.vai.velomaaiagent.rag.QueryRewriter;
+import com.vai.velomaaiagent.rag.TrainAppRagCustomAdvisorsFactory;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -16,6 +17,7 @@ import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.InMemoryChatMemory;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.tool.ToolCallback;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -128,6 +130,8 @@ public class TrainApp {
                                 .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10)
                 )
                 .advisors(new MyLoggerAdvisor())
+                //使用Rag工厂自定义Advisor 增强顾问
+                .advisors(TrainAppRagCustomAdvisorsFactory.createTrainAppRagCustomAdvisors(trainAppVectorStore, "default"))
                 //检索增强顾问复杂版，用的云知识库
 //                .advisors(loadTrainAppRagCloudAdvisor)
                 //简单的问答顾问，使用向量存储进行检索
@@ -135,6 +139,34 @@ public class TrainApp {
                 .call()
                 .chatResponse();
         String content = chatResponse.getResult().getOutput().getText();
+        log.info("content: {}",content);
+        return content;
+    }
+
+    @Resource
+    private ToolCallback[] alltools;
+
+    /**
+     * 工具调用聊天
+     * @param message
+     * @return
+     */
+    public String doToolChat(String message, String chatId){
+        ChatResponse chatResponse = chatClient
+                .prompt()
+                .user(message)
+                .advisors(
+                        advisorSpec -> advisorSpec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId)
+                                .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10)
+
+                )
+                .advisors(new MyLoggerAdvisor())
+                .tools(alltools)
+                .call()
+                .chatResponse();
+        String content = chatResponse.getResult().getOutput().getText();
+
+
         log.info("content: {}",content);
         return content;
     }

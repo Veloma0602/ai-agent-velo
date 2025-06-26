@@ -25,3 +25,5 @@ knife4j:
   enable: true
   setting:
     language: zh_cn
+search-api:
+  api-key: NUsSVRQww1kY96Y4fkPq9gz4
